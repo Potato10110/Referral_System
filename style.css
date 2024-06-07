@@ -3,9 +3,25 @@
     margin: 0;
     box-sizing: border-box;
 }
-.a{
-    color: white;
+.navbar-brand{
+    color: #177739;
 }
 .logo{
     text-align: right;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    /* Adjust the font size as needed */
+}
+
+.navbar-nav .form-select,
+.navbar-nav .form-control {
+    width: auto;
+    /* Set the input width as needed */
+}
+
+.navbar-nav .btn {
+    margin-left: 5px;
+    /* Adjust the margin between buttons */
 }
