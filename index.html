@@ -12,6 +12,11 @@
             padding-top: 56px;
             /* Height of the navbar */
         }
+
+        .referral-list-container {
+            height: 400px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 
@@ -24,15 +29,15 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <form class="navbar-nav" role="search" id="search-form">
+                <form class="navbar-nav me-auto" role="search" id="search-form">
                     <select class="form-select form-select-sm me-2" id="search-filter">
                         <option value="name">Name</option>
                         <option value="email">Email</option>
                         <option value="phone">Phone</option>
                         <option value="referral_code">Referral Code</option>
                     </select>
-                    <input class="form-control form-control-sm me-2" type="search" id="search-query" placeholder="Search"
-                        aria-label="Search">
+                    <input class="form-control form-control-sm me-2" type="search" id="search-query"
+                        placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success btn-sm me-2" type="submit">Search</button>
                     <button class="btn btn-outline-danger btn-sm" type="button" onclick="resetSearch()">Reset</button>
                 </form>
@@ -68,11 +73,10 @@
                 </div>
             </div>
             <div class="col-md-4" style="height: 650px; overflow-y: auto;">
-            <h2 class="text-white">Most Used Codes:</h2>
-            <div id="most-used-referral-codes" class="text-white">
-            </div>
-            </div>
-
+                <h2 class="text-white">Most Used Codes:</h2>
+                <div id="most-used-referral-codes" class="text-white">
+                    <!-- Most used referral codes will be displayed here -->
+                </div>
             </div>
         </div>
     </div>
@@ -98,7 +102,7 @@
                                         <p class="card-text">Referral Code: ${referral.referral_code}</p>
                                         <p class="card-text">Used Referrals: ${referral.referral_count}</p>
                                         <button class="btn btn-primary" onclick="editReferral(${referral.id}, '${referral.name}', '${referral.email}', '${referral.phone}', '${referral.referral_code}')">Edit</button>
-                                        <button class="btn btn-success" onclick="incrementCount(${referral.id})">Increment Count</button>
+                                        <button class="btn btn-success" onclick="incrementCount(${referral.id})">Add Count</button>
                                         <button class="btn btn-danger" onclick="deleteReferral(${referral.id})">Delete</button>
                                     </div>
                                 </div>
@@ -121,28 +125,27 @@
         }
 
         function deleteReferral(id) {
-                fetch(`process.php?action=delete&id=${id}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Remove the deleted referral from the referral list
-                            const referralElement = document.getElementById(`referral-${id}`);
-                            if (referralElement) {
-                                referralElement.remove();
-                            }
-
-                            // Remove the corresponding entry from the most used codes display
-                            const mostUsedReferralCodesElement = document.getElementById('most-used-referral-codes');
-                            const referralCodeElement = mostUsedReferralCodesElement.querySelector(`[data-id="${id}"]`);
-                            if (referralCodeElement) {
-                                referralCodeElement.remove();
-                            }
-                        window.location.reload();
-                        } else {
-                            alert('Failed to delete referral');
+            fetch(`process.php?action=delete&id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the deleted referral from the referral list
+                        const referralElement = document.getElementById(`referral-${id}`);
+                        if (referralElement) {
+                            referralElement.remove();
                         }
-                    });
-            }
+
+                        // Remove the corresponding entry from the most used codes display
+                        const mostUsedReferralCodesElement = document.getElementById('most-used-referral-codes');
+                        const referralCodeElement = mostUsedReferralCodesElement.querySelector(`[data-id="${id}"]`);
+                        if (referralCodeElement) {
+                            referralCodeElement.remove();
+                        }
+                    } else {
+                        alert('Failed to delete referral');
+                    }
+                });
+        }
 
         function incrementCount(id) {
             fetch(`process.php?action=increment_count&id=${id}`)
@@ -157,23 +160,23 @@
                 });
         }
 
-    function loadMostUsedReferralCodes() {
+        function loadMostUsedReferralCodes() {
             fetch('process.php?action=most_used_referral_codes')
                 .then(response => response.json())
                 .then(data => {
                     let mostUsedReferralCodesHtml = '';
                     data.forEach(referral => {
                         mostUsedReferralCodesHtml += `
-                    <div class="card mb-2">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title">${referral.name}</h5>
-                                <p class="card-text">Referral Code: ${referral.referral_code}</p>
+                            <div class="card mb-2">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="card-title">${referral.name}</h5>
+                                        <p class="card-text">Referral Code: ${referral.referral_code}</p>
+                                    </div>
+                                    <span class="badge bg-secondary">People Used ${referral.referral_count}</span>
+                                </div>
                             </div>
-                            <span class="badge bg-secondary">People Used    ${referral.referral_count}</span>
-                        </div>
-                    </div>
-                `;
+                        `;
                     });
                     document.getElementById('most-used-referral-codes').innerHTML = mostUsedReferralCodesHtml;
                 })
@@ -181,8 +184,6 @@
                     console.error('Error fetching most used referral codes:', error);
                 });
         }
-
-
 
         function loadAllReferrals() {
             fetch('process.php?action=read')
@@ -199,9 +200,9 @@
                                         <p class="card-text">Email: ${referral.email}</p>
                                         <p class="card-text">Phone: ${referral.phone}</p>
                                         <p class="card-text">Referral Code: ${referral.referral_code}</p>
-                                        <p class="card-text">Count: ${referral.referral_count}</p>
+                                        <p class="card-text">Used Referral: ${referral.referral_count}</p>
                                         <button class="btn btn-primary" onclick="editReferral(${referral.id}, '${referral.name}', '${referral.email}', '${referral.phone}', '${referral.referral_code}')">Edit</button>
-                                        <button class="btn btn-success" onclick="incrementCount(${referral.id})">Increment Count</button>
+                                        <button class="btn btn-success" onclick="incrementCount(${referral.id})">Add Count</button>
                                         <button class="btn btn-danger" onclick="deleteReferral(${referral.id})">Delete</button>
                                     </div>
                                 </div>
