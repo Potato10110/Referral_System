@@ -12,31 +12,38 @@ if ($conn->connect_error) {
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
-function generateReferralCode() {
-    return substr(md5(uniqid(mt_rand(), true)), 0, 8);
+function generateReferralCode($conn) {
+    $result = $conn->query("SELECT referral_code FROM referrals ORDER BY id DESC LIMIT 1");
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $lastCode = $row['referral_code'];
+        $lastNumber = intval(substr($lastCode, strpos($lastCode, '#') + 1)) + 1;
+    } else {
+        $lastNumber = 1;
+    }
+    return 'Blesces #' . str_pad($lastNumber, 3, '0', STR_PAD_LEFT);
 }
 
 if ($action == 'create') {
     $name = $_POST['name'];
-    $email = $_POST['email'];
     $phone = $_POST['phone'];
-    $referral_code = generateReferralCode();
+    $referral_code = generateReferralCode($conn);
 
-    $insertReferralQuery = "INSERT INTO referrals (name, email, phone, referral_code) VALUES (?, ?, ?, ?)";
+    $insertReferralQuery = "INSERT INTO referrals (name, phone, referral_code) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($insertReferralQuery);
-    $stmt->bind_param("ssss", $name, $email, $phone, $referral_code);
+    $stmt->bind_param("sss", $name, $phone, $referral_code);
     $stmt->execute();
     $stmt->close();
     header('Location: index.html');
 } elseif ($action == 'read') {
-    $selectReferralsQuery = "SELECT * FROM referrals";
+    $selectReferralsQuery = "SELECT * FROM referrals ORDER BY id DESC"; // Order by ID DESC
     $result = $conn->query($selectReferralsQuery);
     $referrals = [];
     while ($row = $result->fetch_assoc()) {
         $referrals[] = $row;
     }
     echo json_encode($referrals);
-} elseif ($action == 'update') {
+}elseif ($action == 'update') {
     $id = $_POST['id'];
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -51,25 +58,13 @@ if ($action == 'create') {
 }elseif ($action == 'delete') {
     $id = $_GET['id'];
 
-    // Delete the referral from the referral list
     $deleteReferralQuery = "DELETE FROM referrals WHERE id = ?";
     $stmt = $conn->prepare($deleteReferralQuery);
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
-
-    // Remove the referral from the most used codes display without deleting it from the database
-    $mostUsedReferralCodes = $_SESSION['most_used_referral_codes'] ?? [];
-    foreach ($mostUsedReferralCodes as $key => $referral) {
-        if ($referral['id'] == $id) {
-            unset($mostUsedReferralCodes[$key]);
-            break;
-        }
-    }
-    $_SESSION['most_used_referral_codes'] = $mostUsedReferralCodes;
-
     echo json_encode(['success' => true]);
-}elseif ($action == 'search') {
+} elseif ($action == 'search') {
     $filter = $_GET['filter'];
     $query = $_GET['query'];
     $searchReferralQuery = "SELECT * FROM referrals WHERE $filter LIKE ?";
@@ -92,7 +87,7 @@ if ($action == 'create') {
     $stmt->execute();
     $stmt->close();
     echo json_encode(['success' => true]);
-}elseif ($action == 'most_used_referral_codes') {
+} elseif ($action == 'most_used_referral_codes') {
     $mostUsedReferralCodesQuery = "SELECT name, referral_code, referral_count FROM referrals GROUP BY referral_code ORDER BY referral_count DESC";
     $result = $conn->query($mostUsedReferralCodesQuery);
     $mostUsedReferralCodes = [];
@@ -101,7 +96,6 @@ if ($action == 'create') {
     }
     echo json_encode($mostUsedReferralCodes);
 }
-
 
 $conn->close();
 ?>

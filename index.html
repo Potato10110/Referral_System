@@ -13,8 +13,8 @@
             /* Height of the navbar */
         }
 
-        .referral-list-container {
-            height: 400px;
+        .referral-list-container, .most-used-referral-codes {
+            height: 300px;
             overflow-y: auto;
         }
     </style>
@@ -55,10 +55,6 @@
                         <label for="name" class="form-label text-white">Name:</label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
-                    <div class="mb-4">
-                        <label for="email" class="form-label text-white">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label text-white">Phone:</label>
                         <input type="tel" class="form-control" id="phone" name="phone" required>
@@ -79,6 +75,14 @@
                 </div>
             </div>
         </div>
+
+        <div id="receipt-content" class="d-none">
+            <!-- Your receipt content here -->
+            <div class="sticker">
+                <img src="blesces.png" alt="blesces">
+                <!-- Other sticker content -->
+            </div>
+        </div>
     </div>
 
     <script>
@@ -97,11 +101,10 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <p class="card-text">Name: ${referral.name}</p>
-                                        <p class="card-text">Email: ${referral.email}</p>
                                         <p class="card-text">Phone: ${referral.phone}</p>
                                         <p class="card-text">Referral Code: ${referral.referral_code}</p>
                                         <p class="card-text">Used Referrals: ${referral.referral_count}</p>
-                                        <button class="btn btn-primary" onclick="editReferral(${referral.id}, '${referral.name}', '${referral.email}', '${referral.phone}', '${referral.referral_code}')">Edit</button>
+                                        <button class="btn btn-primary" onclick="editReferral(${referral.id}, '${referral.name}', '${referral.phone}')">Edit</button>
                                         <button class="btn btn-success" onclick="incrementCount(${referral.id})">Add Count</button>
                                         <button class="btn btn-danger" onclick="deleteReferral(${referral.id})">Delete</button>
                                     </div>
@@ -117,12 +120,11 @@
             loadAllReferrals();
         }
 
-        function editReferral(id, name, email, phone, referral_code) {
-            document.getElementById('id').value = id;
-            document.getElementById('name').value = name;
-            document.getElementById('email').value = email;
-            document.getElementById('phone').value = phone;
-        }
+        function editReferral(id, name, phone) {
+                document.getElementById('id').value = id;
+                document.getElementById('name').value = name;
+                document.getElementById('phone').value = phone;
+            }
 
         function deleteReferral(id) {
             fetch(`process.php?action=delete&id=${id}`)
@@ -197,11 +199,10 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <p class="card-text">Name: ${referral.name}</p>
-                                        <p class="card-text">Email: ${referral.email}</p>
                                         <p class="card-text">Phone: ${referral.phone}</p>
                                         <p class="card-text">Referral Code: ${referral.referral_code}</p>
                                         <p class="card-text">Used Referral: ${referral.referral_count}</p>
-                                        <button class="btn btn-primary" onclick="editReferral(${referral.id}, '${referral.name}', '${referral.email}', '${referral.phone}', '${referral.referral_code}')">Edit</button>
+                                        <button class="btn btn-primary" onclick="editReferral(${referral.id}, '${referral.name}', '${referral.phone}')">Edit</button>
                                         <button class="btn btn-success" onclick="incrementCount(${referral.id})">Add Count</button>
                                         <button class="btn btn-danger" onclick="deleteReferral(${referral.id})">Delete</button>
                                     </div>
@@ -213,11 +214,11 @@
 
             loadMostUsedReferralCodes();
         }
-
         // Initial load
-        loadAllReferrals();
+        loadAllReferrals(); 
     </script>
 
+    <script src="html2canvas.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
         crossorigin="anonymous"></script>
