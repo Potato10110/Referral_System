@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 07, 2024 at 09:52 AM
+-- Generation Time: Jun 10, 2024 at 06:42 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -30,23 +30,22 @@ SET time_zone = "+00:00";
 CREATE TABLE `referrals` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
   `phone` varchar(15) NOT NULL,
-  `referred_by` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `referral_code` varchar(8) NOT NULL,
-  `referral_count` int(11) DEFAULT 0
+  `referral_code` varchar(255) NOT NULL,
+  `referral_count` varchar(255) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `referrals`
 --
 
-INSERT INTO `referrals` (`id`, `name`, `email`, `phone`, `referred_by`, `created_at`, `referral_code`, `referral_count`) VALUES
-(6, 'Xyrus Calde', 'xyruscalde@gmail.com', '09999999999', '', '2024-06-06 06:56:06', '07cca511', 9),
-(10, 'micko forescal', 'mickoforescal@gmail.com', '09495093123', '', '2024-06-07 06:47:56', '4db04837', 1),
-(11, 'Reyniel Naguit', 'reynielnaguit4@gmail.com', '09900990999', '', '2024-06-07 06:48:42', '42157c40', 1),
-(12, 'Leonardo De Silva', 'leonardosilva@gmail.com', '09282901284', '', '2024-06-07 06:50:37', 'f6740faf', 3);
+INSERT INTO `referrals` (`id`, `name`, `phone`, `created_at`, `referral_code`, `referral_count`) VALUES
+(1, 'Mico Forescal', '09495093123', '2024-06-10 01:41:24', '1', '1'),
+(10, 'Aerol Smith', '09495093123', '2024-06-10 01:49:32', 'Blesces #001', '1'),
+(11, 'Xyrus Calde', '09682341451', '2024-06-10 01:50:13', 'Blesces #002', '3'),
+(12, 'Reyniel Naguit', '09234156191', '2024-06-10 04:08:37', 'Blesces #003', '1'),
+(13, 'Nadia Smith', '09824151512', '2024-06-10 04:41:50', 'Blesces #004', '4');
 
 --
 -- Indexes for dumped tables
@@ -56,7 +55,8 @@ INSERT INTO `referrals` (`id`, `name`, `email`, `phone`, `referred_by`, `created
 -- Indexes for table `referrals`
 --
 ALTER TABLE `referrals`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `referral_code` (`referral_code`);
 
 --
 -- AUTO_INCREMENT for dumped tables
